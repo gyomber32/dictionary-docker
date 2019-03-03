@@ -1,0 +1,29 @@
+version: '3'
+services:
+  db:
+    container_name: dictionary-db
+    build: './postgres'
+    environment:
+      POSTGRES_USER: ginger
+      POSTGRES_PASSWORD: source32
+      POSTGRES_DB: dictionary
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/
+    ports:
+      - '5001:5432'
+  loopback:
+    container_name: dictionary-loopback
+    build: './loopback'
+    depends_on:
+      - db
+    ports:
+      - '3001:3000'
+  angular:
+    container_name: dictionary-angular
+    build:
+      context: ./angular
+    depends_on:
+      - loopback
+    ports:
+      - '4200:4200'
